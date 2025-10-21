@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var showSheet: Bool = false
+    
     var body: some View {
         ZStack {
             
@@ -65,11 +67,14 @@ struct ContentView: View {
                 
                 
                 Button {
-                    // action
+                    
+                    showSheet.toggle()
+                    
                 } label: {
                     Text("Set Plant Reminder")
                         .font(.system(size: 17, weight: .regular))
                         .frame(width: 280, height: 30) // <- size the label BEFORE the style
+
                 }
                 .buttonStyle(.glassProminent)
                 .tint(Color("Green"))
@@ -83,7 +88,7 @@ struct ContentView: View {
             
       
             
-            
+          
             
             
             
