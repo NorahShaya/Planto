@@ -62,8 +62,9 @@ struct ReminderSheet: View {
             Color("sheetbg")
                 .ignoresSafeArea()
 
-            
-            VStack{
+            VStack  {
+                
+            VStack (spacing : 10){
                 
                 HStack{
                     Button {
@@ -94,127 +95,223 @@ struct ReminderSheet: View {
                             .padding(2)
 
                     }
+                    
                     .buttonStyle(.glassProminent)
                     .tint(Color("Green"))
                     .padding(.trailing, 20)
 
                     
                 }
-                Spacer()
-                    .frame(height: 60)
+               Spacer()
+                  //.frame(height: 60)
                     
                 
                 //GROUP OF FORM
                 VStack{
                     
                     //First form
-                    HStack(spacing: 7 ){
-
+                    HStack{
+                       Spacer()
                         Text("Plant name")
-                            .padding(.leading, 20)
+                            .padding(2)
                             .font(Font.system(size: 18, weight: .regular))
                             .foregroundStyle(Color.white)
+                        
                         TextField("Pothos", text: .constant(""))
                             .foregroundStyle(Color.white.opacity(0.8))
                             .tint(Color.green) // changes cursor (insertion point) color
                             .font(Font.system(size: 18, weight: .regular))
-                            .padding(.trailing, 20)
+                      //    .padding(.trailing, 20)
                         
                         
                     }//end of first form
-                    .padding(18)
+                    .frame(height: 60)
+                   //.padding(18)
                     .background(Color("Formgroup"))
-                    .cornerRadius(70)
-                    .padding(.trailing, 12)
-                    .padding(.leading, 12)
+                    .cornerRadius(30)
+//                    .padding(.trailing, 6)
+//                    .padding(.leading, 6)
+                    
 
                     Spacer()
+                    
               
 
-                    //second form
+                    //Second form
                     VStack{
-                        //last commit here in the HSTACK 
-                        HStack(spacing: 80){
+                        HStack{
                             HStack{
                                 
                                 Image(systemName: "location")
-                                Text("Plant name")
+                                    .foregroundStyle(.white)
+                                    .font(Font.system(size: 18, weight: .regular))
+                                
+                                Text("Room")
                                     .font(Font.system(size: 18, weight: .regular))
                                     .foregroundStyle(Color.white)
+                                
                             }
-                          
-                        
+                            
+                            Spacer()
                             // Right Picker (menu)
                             
                             Picker("selectedroom", selection: $selectedRoom){
                                 
                                 ForEach(roomType.allCases){ room in
-                                    
                                     Text(room.rawValue).tag(room)}
-   
                             }
-                        
                             .pickerStyle(.menu)
                             .tint(.gray) // color of the selected value and caret icon
-                            
+                         
                         }
+                        .padding(.trailing, 12)
+                      .padding(.leading, 12)
+                        .padding(6)
+                        
                         Divider()
                         .frame(height: 0.5)               // thickness
                         .background(Color.gray.opacity(0.3))
-                     
-                        
                         HStack{
-                            Image(systemName: "location")
-                            Text("name")
-                                .padding(.leading, 20)
+                            Image(systemName: "sun.max")
+                                .foregroundStyle(.white)
+                                .font(Font.system(size: 18, weight: .regular))
+                            Text("Light")
                                 .font(Font.system(size: 18, weight: .regular))
                                 .foregroundStyle(Color.white)
                             Spacer()
-                        
                             // Right Picker (menu)
                             HStack{
-                            Picker("selectedroom", selection: $selectedRoom){
-                                
-                                ForEach(roomType.allCases){ room in
-                                    
-                                    Text(room.rawValue).tag(room)}
-   
+                            Picker("selectedroom", selection: $lightingType){
+                                ForEach(lighting.allCases){ light in
+                                    Text(light.rawValue).tag(light)}
                             }
                         }
                             .pickerStyle(.menu)
                             .tint(.gray) // color of the selected value and caret icon
                             
                         }
-                        
-                    
-                        
-                        
-                        
-                       
-                        
+                        .padding(.trailing, 12)
+                      .padding(.leading, 12)
+                      .padding(6)
+
                     }
-                    .padding(18)
+                    
+                    
+               
                     .background(Color("Formgroup"))
                     .cornerRadius(30)
-                    .padding(.trailing, 12)
-                    .padding(.leading, 12)
-                    .frame(width: .infinity)
+                    .padding(.trailing, 6)
+                    .padding(.leading, 6)
+
                     
-                
+                //.padding(15)
+                  //  Spacer().frame(height: 400)
+
+                                        
+     
+                    //Third form
+                    VStack{
+                        //last commit here in the HSTACK
+                        HStack{
+                            HStack{
+                                
+                                Image(systemName: "drop")
+                                    .foregroundStyle(.white)
+                                    .font(Font.system(size: 18, weight: .regular))
+                                Text("Watering days")
+                                    .font(Font.system(size: 18, weight: .regular))
+                                    .foregroundStyle(Color.white)
+                                Spacer()
+                            }
+                            // Right Picker (menu)
+                            
+                            Picker("selectedroom", selection: $selectedWatering){
+                                
+                                ForEach(wateringDays.allCases){ days in
+                                    Text(days.rawValue).tag(days)}
+                            }
+                            .pickerStyle(.menu)
+                            .tint(.gray) // color of the selected value and caret icon
+                        }
+                        .padding(.trailing, 12)
+                      .padding(.leading, 12)
+                      .padding(6)
+
+        
+                        Divider()
+                        .frame(height: 0.5)               // thickness
+                        .background(Color.gray.opacity(0.3))
+                        HStack{
+                            Image(systemName: "drop")
+                                .foregroundStyle(.white)
+                                .font(Font.system(size: 18, weight: .regular))
+                            Text("Water")
+                                .font(Font.system(size: 18, weight: .regular))
+                                .foregroundStyle(Color.white)
+                            Spacer()
+                            
+                        
+                            // Right Picker (menu)
+                            HStack{
+                            Picker("selectedroom", selection: $selectedWater){
+                                ForEach(waterAmount.allCases){ amount in
+                                    Text(amount.rawValue).tag(amount)}
+                            }
+                        }
+                            
+                            .pickerStyle(.menu)
+                            .tint(.gray) // color of the selected value and caret icon
+                          
+                            
+                        }
+                        .padding(.trailing, 12)
+                      .padding(.leading, 12)
+                      .padding(6)
+
+                 
+                    }
+                    .frame(width: .infinity)
+                    .background(Color("Formgroup"))
+                    .cornerRadius(30)
+                    .padding(.trailing, 3)
+                  .padding(.leading, 3)
+                  .padding(.top, 25)
+                    Spacer().frame(height: 320)
+
+                   
+
+                   
+                    //.padding(15)
                     //end of second form
                 }
                 
-                Spacer()
-                .frame(height: 420)
+             
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 
             }
-            .padding(.top, 30) //padding for ZStack
+                
+          //  .padding(.top, 30) //padding for ZStack
 
-        }//end of ZStack
+        }
+           
+
+            //end of ZStack
         
-        
-        .frame(maxWidth: .infinity, maxHeight: .infinity)//body frame
+         
+        //.frame(maxWidth: .infinity, maxHeight: .infinity)
+            //body frame
     }
+    }
+
 }
 
 #Preview {
