@@ -10,50 +10,16 @@ import SwiftUI
 struct ReminderSheet: View {
     
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     
-    enum roomType : String, CaseIterable, Identifiable {
-        case bedroom = "Bedroom"
-        case Living = "Living Room"
-        case Kitchen = "Kitchen"
-        case Balcony = "Balcony"
-        case Bathroom = "Bathroom"
-        
+    @EnvironmentObject var store: PlantStore   // access shared data
 
-        var id: String { rawValue }
+        @State var plantName = ""
+        @State var selectedRoom: roomType = .bedroom
+        @State var selectedWatering: wateringDays = .everyDay
+        @State var selectedWater: waterAmount = .oneMl
+        @State var lightingType: lighting = .full
 
-    }
-    enum wateringDays: String, CaseIterable, Identifiable {
-        case everyDay = "Everyday"
-        case everyTwo = "Every 2 days"
-        case everyThree = "Every 3 days"
-        case oneWeek = "Once a week"
-        case everyTen = "Every 10 days"
-        case twoWeek = "Every 2 weeks"
-        
-        var id: String { rawValue}
-    }
-    
-    enum waterAmount: String, CaseIterable, Identifiable {
-        case oneMl = "20-50ml"
-        case twoMl = "50-100ml"
-        case threeMl = "100-200ml"
-        case fourMl = "200-300ml"
-        
-        var id: String { rawValue}
-    }
-    
-    enum lighting: String, CaseIterable, Identifiable {
-        case full = "Full sun"
-        case partial = "Partial sun"
-        case lowLight = "Low light"
-        
-        var id: String{ rawValue }
-    }
-    
-    @State var selectedRoom: roomType = .bedroom
-    @State var selectedWatering: wateringDays = .everyDay
-    @State var selectedWater: waterAmount = .oneMl
-    @State var lightingType: lighting = .full
     
     
     var body: some View {
@@ -68,13 +34,15 @@ struct ReminderSheet: View {
                 
                 HStack{
                     Button {
-                                                
+                        // Dismiss the sheet
+                        dismiss()
                     } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 17, weight: .regular))
-                            .padding(2)
+                            .padding(4)
                     }
                     .buttonStyle(.glass)
+                    .clipShape(Circle())
                     .padding(.leading, 20)
 
                     Spacer()
@@ -86,18 +54,14 @@ struct ReminderSheet: View {
                     
                     Spacer()
                     
-                    Button {
-                        
-                        
-                    } label: {
+                    Button(action: save) {
                         Image(systemName: "checkmark")
                             .font(.system(size: 17, weight: .regular))
-                            .padding(2)
-
+                            .padding(4)
                     }
-                    
                     .buttonStyle(.glassProminent)
-                    .tint(Color("Green"))
+                    .clipShape(Circle())
+                    .tint(Color("Greeno"))
                     .padding(.trailing, 20)
 
                     
@@ -117,7 +81,7 @@ struct ReminderSheet: View {
                             .font(Font.system(size: 18, weight: .regular))
                             .foregroundStyle(Color.white)
                         
-                        TextField("Pothos", text: .constant(""))
+                        TextField("Pothos", text: $plantName)
                             .foregroundStyle(Color.white.opacity(0.8))
                             .tint(Color.green) // changes cursor (insertion point) color
                             .font(Font.system(size: 18, weight: .regular))
@@ -310,10 +274,30 @@ struct ReminderSheet: View {
         //.frame(maxWidth: .infinity, maxHeight: .infinity)
             //body frame
     }
+        
+        
+    }
+    
+    private func save() {
+        guard !plantName.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+
+        let newPlant = Plant(
+            name: plantName,
+            room: selectedRoom,
+            light: lightingType,
+            watering: selectedWatering,
+            waterAmount: selectedWater
+        )
+
+        store.add(newPlant)
+        dismiss()
     }
 
 }
 
+
 #Preview {
     ReminderSheet()
+        .environmentObject(PlantStore())
 }
+
