@@ -234,7 +234,8 @@ struct ReminderSheet: View {
 
                  
                     }
-                    .frame(width: .infinity)
+                    
+                    
                     .background(Color("Formgroup"))
                     .cornerRadius(30)
                     .padding(.trailing, 3)
@@ -299,5 +300,7 @@ struct ReminderSheet: View {
 #Preview {
     ReminderSheet()
         .environmentObject(PlantStore())
+        .preferredColorScheme(.dark)
+
 }
 

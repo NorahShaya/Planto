@@ -14,8 +14,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             // Background
-            Color("Background")
-                .ignoresSafeArea()
+           
 
             VStack(spacing: 0) {
                 // Title section
@@ -138,4 +137,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(PlantStore())
+        .preferredColorScheme(.dark)
+
 }
