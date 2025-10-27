@@ -20,6 +20,13 @@ final class PlantStore: ObservableObject {
         plants.remove(atOffsets: offsets)
     }
 
+    // Remove a specific plant
+    func remove(_ plant: Plant) {
+        if let idx = plants.firstIndex(where: { $0.id == plant.id }) {
+            plants.remove(at: idx)
+        }
+    }
+
     // MARK: - Daily check API
 
     func toggleChecked(for plant: Plant) {

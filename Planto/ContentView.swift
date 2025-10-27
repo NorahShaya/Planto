@@ -45,7 +45,7 @@ struct ContentView: View {
                         ProgressView(value: store.progress)
                             .tint(Color("Greeno"))
                             .progressViewStyle(.linear)
-                            .frame(height: 15) // increased height
+                            .frame(height: 15)
                             .padding(.trailing, 16)
                             .padding(.leading, 16)
                     }
@@ -94,26 +94,22 @@ struct ContentView: View {
                     }
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
                 } else {
-                    // Scroll content with floating + button
+                    // Use a List so swipe actions appear
                     ZStack {
-                        ScrollView {
-                            LazyVStack(alignment: .leading, spacing: 0) {
-                                ForEach(store.plants) { plant in
-                                    PlantRow(plant: plant)
-                                        .environmentObject(store)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-
-                                    Divider()
-                                        .background(Color.gray.opacity(0.3))
-                                        .padding(.leading, 16)
-                                }
+                        List {
+                            ForEach(store.plants) { plant in
+                                PlantRow(plant: plant)
+                                    .environmentObject(store)
+                                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                    .listRowBackground(Color.clear)
                             }
-                            .padding(.top, 16)
-                            .padding(.bottom, 88) // keep last row visible above button
+                            .onDelete(perform: store.remove)
                         }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
 
-                        // Floating add button bottom-right with glass effect
+                        // Floating add button bottom-right
                         Button {
                             showSheet.toggle()
                         } label: {
@@ -126,6 +122,7 @@ struct ContentView: View {
                         .padding(.trailing, 16)
                         .padding(.bottom, 16)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                        .allowsHitTesting(true)
                     }
                 }
             }
