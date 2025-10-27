@@ -9,106 +9,136 @@ import SwiftUI
 
 struct ContentView: View {
     @State var showSheet: Bool = false
-    
+    @EnvironmentObject var store: PlantStore  // ② access shared data
+
     var body: some View {
         ZStack {
-            
-            
-            //start of title section
-            VStack(alignment: .leading){
-                Text("My Plants 🌱")
-                    .padding(.leading, 15)
-                    .padding(.top, 60)
-                    .font(.system(size: 34, weight: .bold))
-                    .foregroundColor(.white)
-                Divider()
-                .frame(height: 2)               // thickness
-                .background(Color.gray.opacity(0.5))
-                .padding(.leading, 10)
-                .padding(.trailing, 10)
+            // Background
+            Color("Background")
+                .ignoresSafeArea()
 
-                Spacer()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-             
-            }//end of title section
-            
-            
-            
-            
-            //Start of middle section
-            VStack(spacing: 35){
-                Image("PlantoDefault")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 160, height: 200)
-                    .padding(.top, 40)
-
-                
-                Text("Start your plant journey!")
-                    .font(.system(size: 25, weight: .semibold))
-                    .foregroundColor(.white)
-                
-                //START OF GROUPED TEXT MIDDLE SECTION
-                VStack{
-                    Text("Now all your plants will be in one place and ")
-                        .padding(.trailing, 35)
-                        .padding(.leading, 35)
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(Color("Textsecondary"))
-                    
-                    
-                    Text("we will help you take care of them :)🪴")
-                        .padding(.trailing, 35)
-                        .padding(.leading, 35)
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(Color("Textsecondary"))
-
-                }//END OF GROUPED TEXT MIDDLE SECTION
-                
-                
-                Button {
-                    
-                    showSheet.toggle()
-                    
-                } label: {
-                    Text("Set Plant Reminder")
-                        .font(.system(size: 17, weight: .regular))
-                        .frame(width: 280, height: 30) // <- size the label BEFORE the style
-
+            VStack(spacing: 0) {
+                // Title section
+                VStack(alignment: .leading) {
+                    Text("My Plants 🌱")
+                        .padding(.leading, 15)
+                        .padding(.top, 60)
+                        .font(.system(size: 34, weight: .bold))
+                        .foregroundColor(.white)
+                    Divider()
+                        .frame(height: 2)
+                        .background(Color.gray.opacity(0.5))
+                        .padding(.horizontal, 10)
                 }
-                .buttonStyle(.glassProminent)
-                .tint(Color("Green"))
-                .padding(.top, 40)
-             
-         
-            }//end of middle section
-            
-        
-            Spacer()
-            
-      
-            
-          
-            
-            
-            
-            
-            
-            
-            
-       
-        }//end of ZStack
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-        .background(Color("Background"))
+                // Water tracker header + progress
+                if !store.plants.isEmpty {
+                    VStack(alignment: .center) {
+                        Text(store.checkedCount == 0
+                             ? "Your plants are waiting for a sip 💦"
+                             : "\(store.checkedCount) of your plants feel loved today✨")
+                            .font(.system(size: 16, weight: .regular))
+                            .foregroundColor(.white.opacity(0.95))
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .multilineTextAlignment(.center)
+
+                        ProgressView(value: store.progress)
+                            .tint(Color("Greeno"))
+                            .progressViewStyle(.linear)
+                            .frame(height: 15) // increased height
+                            .padding(.trailing, 16)
+                            .padding(.leading, 16)
+                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 4)
+                }
+
+                // Content section
+                if store.plants.isEmpty {
+                    // Empty state
+                    VStack(spacing: 35) {
+                        Image("PlantoDefault")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 160, height: 200)
+                            .padding(.top, 40)
+
+                        Text("Start your plant journey!")
+                            .font(.system(size: 25, weight: .semibold))
+                            .foregroundColor(.white)
+
+                        VStack {
+                            Text("Now all your plants will be in one place and ")
+                                .padding(.horizontal, 35)
+                                .font(.system(size: 16, weight: .regular))
+                                .foregroundColor(Color("Textsecondary"))
+
+                            Text("we will help you take care of them :)🪴")
+                                .padding(.horizontal, 35)
+                                .font(.system(size: 16, weight: .regular))
+                                .foregroundColor(Color("Textsecondary"))
+                        }
+
+                        Button {
+                            showSheet.toggle()
+                        } label: {
+                            Text("Set Plant Reminder")
+                                .font(.system(size: 17, weight: .regular))
+                                .frame(width: 280, height: 30)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(Color("Greeno"))
+                        .padding(.top, 40)
+
+                        Spacer()
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                } else {
+                    // Scroll content with floating + button
+                    ZStack {
+                        ScrollView {
+                            LazyVStack(alignment: .leading, spacing: 0) {
+                                ForEach(store.plants) { plant in
+                                    PlantRow(plant: plant)
+                                        .environmentObject(store)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+
+                                    Divider()
+                                        .background(Color.gray.opacity(0.3))
+                                        .padding(.leading, 16)
+                                }
+                            }
+                            .padding(.top, 16)
+                            .padding(.bottom, 88) // keep last row visible above button
+                        }
+
+                        // Floating add button bottom-right with glass effect
+                        Button {
+                            showSheet.toggle()
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.system(size: 17, weight: .regular))
+                                .frame(width: 44, height: 44)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(Color("Greeno"))
+                        .padding(.trailing, 16)
+                        .padding(.bottom, 16)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    }
+                }
+            }
+        }
+        .animation(.easeInOut, value: store.plants)
+        .sheet(isPresented: $showSheet) {
+            ReminderSheet()
+                .environmentObject(store)
+        }
     }
-       
-
-
-
 }
-
 
 #Preview {
     ContentView()
+        .environmentObject(PlantStore())
 }
