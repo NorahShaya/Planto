@@ -149,6 +149,7 @@ struct PlantRow: View {
             Spacer(minLength: 0)
         }
         .padding(.vertical, 8)
+
     }
 }
 
