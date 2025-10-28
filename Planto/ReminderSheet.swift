@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct ReminderSheet: View {
     
@@ -289,6 +290,11 @@ struct ReminderSheet: View {
             watering: selectedWatering,
             waterAmount: selectedWater
         )
+
+        // If all existing plants are checked (Group 4 visible), clear them first
+        if store.checkedCount == store.plants.count && !store.plants.isEmpty {
+            store.clearAll()
+        }
 
         store.add(newPlant)
         dismiss()

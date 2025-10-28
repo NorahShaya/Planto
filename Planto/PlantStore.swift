@@ -14,16 +14,47 @@ final class PlantStore: ObservableObject {
 
     func add(_ plant: Plant) {
         plants.append(plant)
+        Task {
+            try? await NotificationManager.requestAuthorizationIfNeeded()
+            try? await NotificationManager.scheduleWatering(for: plant)
+        }
+    }
+
+    func update(_ plant: Plant) {
+        guard let idx = plants.firstIndex(where: { $0.id == plant.id }) else { return }
+        plants[idx] = plant
+        Task {
+            try? await NotificationManager.requestAuthorizationIfNeeded()
+            try? await NotificationManager.scheduleWatering(for: plant)
+        }
     }
 
     func remove(at offsets: IndexSet) {
+        let ids = offsets.map { plants[$0].id }
         plants.remove(atOffsets: offsets)
+        Task {
+            for id in ids {
+                await NotificationManager.cancel(for: id)
+            }
+        }
     }
 
     // Remove a specific plant
     func remove(_ plant: Plant) {
         if let idx = plants.firstIndex(where: { $0.id == plant.id }) {
             plants.remove(at: idx)
+            Task { await NotificationManager.cancel(for: plant.id) }
+        }
+    }
+
+    // Clear all plants
+    func clearAll() {
+        let ids = plants.map { $0.id }
+        plants.removeAll()
+        Task {
+            for id in ids {
+                await NotificationManager.cancel(for: id)
+            }
         }
     }
 
@@ -32,12 +63,11 @@ final class PlantStore: ObservableObject {
     func toggleChecked(for plant: Plant) {
         guard let idx = plants.firstIndex(where: { $0.id == plant.id }) else { return }
         if plants[idx].isCheckedToday {
-            // Uncheck for today
             plants[idx].lastChecked = nil
         } else {
-            // Check now
             plants[idx].lastChecked = Date()
         }
+        // We do not change the schedule when checking off for today; watering cadence remains.
     }
 
     func resetToday() {
@@ -55,9 +85,7 @@ final class PlantStore: ObservableObject {
         return Double(checkedCount) / Double(plants.count)
     }
 
-    // Legacy total events (kept if you referenced it elsewhere)
     var totalWaterEvents: Int {
         checkedCount
     }
 }
-
