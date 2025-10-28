@@ -1,30 +1,19 @@
-//
-//  PlantoApp.swift
-//  Planto
-//
-//  Created by Norah Aldawsari on 23/10/2025.
-//
- 
- 
-//
-//  PlantoApp.swift
-//  Planto
-//
-//  Created by Norah Aldawsari on 27/04/1447 AH.
-//
 
 import SwiftUI
+import Foundation
 
 @main
 struct PlantoApp: App {
-    @StateObject private var store = PlantStore()   // Create one shared instance
+    @StateObject private var store = PlantStore()
 
-    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(store)            // Inject into environment
-                .preferredColorScheme(.dark)         // Force dark mode app-wide
+                .environmentObject(store)
+                .preferredColorScheme(.dark)
+                .task {
+                    try? await NotificationManager.requestAuthorizationIfNeeded()
+                }
         }
     }
 }

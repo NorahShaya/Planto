@@ -36,36 +36,6 @@ struct MyPlantsView: View {
                     .environmentObject(store)
             }
         }
-        VStack(alignment: .leading, spacing: 4) {
-            Label("In Bedroom", systemImage: "location")
-                .foregroundStyle(.secondary.opacity(0.7))
-            Text("Monstera")
-                .font(.system(size: 28, weight: .regular))
-                .foregroundColor(.white)
-            HStack(spacing: 12) {
-                Label("Full sun", systemImage: "sun.max")
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundStyle(Color("Textyellow"))
-                    .padding(.trailing, 12)
-                    .padding(.leading, 12)
-                    .padding(.top, 2)
-                    .padding(.bottom, 2)
-                    .background(Color("Formgroup").opacity(0.8))
-                    .cornerRadius(30)
-                    .padding(2)
-                Label("20-50 ml", systemImage: "sun.max")
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundStyle(Color("Textblue"))
-                    .padding(.trailing, 12)
-                    .padding(.leading, 12)
-                    .padding(.top, 2)
-                    .padding(.bottom, 2)
-                    .background(Color("Formgroup").opacity(0.8))
-                    .cornerRadius(30)
-                    .padding(2)
-            }
-        }
-        .padding(.vertical, 6)
     }
 }
 
@@ -149,7 +119,13 @@ struct PlantRow: View {
             Spacer(minLength: 0)
         }
         .padding(.vertical, 8)
-
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                store.remove(plant)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
 }
 

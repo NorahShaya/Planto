@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct ReminderSheet: View {
     
@@ -234,7 +235,8 @@ struct ReminderSheet: View {
 
                  
                     }
-                    .frame(width: .infinity)
+                    
+                    
                     .background(Color("Formgroup"))
                     .cornerRadius(30)
                     .padding(.trailing, 3)
@@ -289,6 +291,11 @@ struct ReminderSheet: View {
             waterAmount: selectedWater
         )
 
+        // If all existing plants are checked (Group 4 visible), clear them first
+        if store.checkedCount == store.plants.count && !store.plants.isEmpty {
+            store.clearAll()
+        }
+
         store.add(newPlant)
         dismiss()
     }
@@ -299,5 +306,7 @@ struct ReminderSheet: View {
 #Preview {
     ReminderSheet()
         .environmentObject(PlantStore())
+        .preferredColorScheme(.dark)
+
 }
 

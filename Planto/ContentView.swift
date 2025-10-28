@@ -11,28 +11,35 @@ struct ContentView: View {
     @State var showSheet: Bool = false
     @EnvironmentObject var store: PlantStore  // ② access shared data
 
+    // Selected plant for editing
+    @State private var selectedPlant: Plant?
+
     var body: some View {
         ZStack {
             // Background
-            Color("Background")
-                .ignoresSafeArea()
+           
 
             VStack(spacing: 0) {
                 // Title section
                 VStack(alignment: .leading) {
                     Text("My Plants 🌱")
-                        .padding(.leading, 15)
-                        .padding(.top, 60)
                         .font(.system(size: 34, weight: .bold))
                         .foregroundColor(.white)
-                    Divider()
-                        .frame(height: 2)
-                        .background(Color.gray.opacity(0.5))
-                        .padding(.horizontal, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading) // keep left aligned
+                        .padding(.leading, 15)
+                        .padding(.top, 60)
+
+                    // Show divider only in empty state
+                    if store.plants.isEmpty {
+                        Divider()
+                            .frame(height: 2)
+                            .background(Color.gray.opacity(0.5))
+                            .padding(.horizontal, 10)
+                    }
                 }
 
                 // Water tracker header + progress
-                if !store.plants.isEmpty {
+                if !store.plants.isEmpty && store.checkedCount != store.plants.count {
                     VStack(alignment: .center) {
                         Text(store.checkedCount == 0
                              ? "Your plants are waiting for a sip 💦"
@@ -45,7 +52,7 @@ struct ContentView: View {
                         ProgressView(value: store.progress)
                             .tint(Color("Greeno"))
                             .progressViewStyle(.linear)
-                            .frame(height: 15) // increased height
+                            .frame(height: 15)
                             .padding(.trailing, 16)
                             .padding(.leading, 16)
                     }
@@ -93,27 +100,30 @@ struct ContentView: View {
                         Spacer()
                     }
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
-                } else {
-                    // Scroll content with floating + button
+                } else if store.checkedCount == store.plants.count {
+                    // All done state
                     ZStack {
-                        ScrollView {
-                            LazyVStack(alignment: .leading, spacing: 0) {
-                                ForEach(store.plants) { plant in
-                                    PlantRow(plant: plant)
-                                        .environmentObject(store)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
+                        VStack(spacing: 20) {
+                            Spacer()
+                            Image("Group 4")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 260, height: 260)
+                                .padding(.bottom, 8)
 
-                                    Divider()
-                                        .background(Color.gray.opacity(0.3))
-                                        .padding(.leading, 16)
-                                }
-                            }
-                            .padding(.top, 16)
-                            .padding(.bottom, 88) // keep last row visible above button
+                            Text("All Done! 🎉")
+                                .font(.system(size: 28, weight: .semibold))
+                                .foregroundColor(.white)
+
+                            Text("All Reminders Completed")
+                                .font(.system(size: 18, weight: .regular))
+                                .foregroundColor(Color("Textsecondary"))
+
+                            Spacer()
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                        // Floating add button bottom-right with glass effect
+                        // Floating add button also visible on "All Done"
                         Button {
                             showSheet.toggle()
                         } label: {
@@ -127,12 +137,54 @@ struct ContentView: View {
                         .padding(.bottom, 16)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                     }
+                    .transition(.opacity.combined(with: .scale))
+                } else {
+                    // Use a List so swipe actions appear
+                    ZStack {
+                        List {
+                            ForEach(store.plants) { plant in
+                                PlantRow(plant: plant)
+                                    .environmentObject(store)
+                                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                    .listRowBackground(Color.clear)
+                                    .contentShape(Rectangle()) // make entire row tappable
+                                    .onTapGesture {
+                                        selectedPlant = plant
+                                    }
+                            }
+                            .onDelete(perform: store.remove)
+                        }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
+
+                        // Floating add button bottom-right
+                        Button {
+                            showSheet.toggle()
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.system(size: 17, weight: .regular))
+                                .frame(width: 44, height: 44)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(Color("Greeno"))
+                        .padding(.trailing, 16)
+                        .padding(.bottom, 16)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                        .allowsHitTesting(true)
+                    }
                 }
             }
         }
         .animation(.easeInOut, value: store.plants)
+        .animation(.easeInOut, value: store.checkedCount)
+        // Add new/edit sheet presentations
         .sheet(isPresented: $showSheet) {
             ReminderSheet()
+                .environmentObject(store)
+        }
+        .sheet(item: $selectedPlant) { plant in
+            EditSheet(plant: plant)
                 .environmentObject(store)
         }
     }
@@ -141,4 +193,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(PlantStore())
+        .preferredColorScheme(.dark)
+
 }
