@@ -48,7 +48,6 @@ Here’s how users move through the app:
 > As a user, I want to get a confirmation when all reminders are complete.  
 
 *(See `/docs/user-stories.png` for visuals)*  
-
 ---
 
 ## 🧩 Features  
