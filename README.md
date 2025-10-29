@@ -23,7 +23,7 @@ Here’s how users move through the app:
    - Delete Reminder 🗑️  
 6. ✅ End — plant care complete!  
 
-*(See `/docs/user-flow.png` for full flowchart)*  
+*(See `docs/User Flow.png` for full flowchart)*  
 
 ---
 
